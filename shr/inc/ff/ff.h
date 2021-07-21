@@ -1,6 +1,7 @@
 #include <inttypes.h>
 
 typedef uint16_t u16;
+typedef uint32_t u32;
 struct FFPixel { u16 r, g, b, a; } ;
 typedef struct FFPixel FFPixel;
 

@@ -2,7 +2,7 @@
 #include <string.h>
 
 void
-ff_pixel_swap_endian(FFPixel *p)
+ff_swap_pixel_endian(FFPixel *p)
 {
 	ff_swap_endian(&p->r, sizeof(p->r));
 	ff_swap_endian(&p->g, sizeof(p->g));
@@ -11,11 +11,11 @@ ff_pixel_swap_endian(FFPixel *p)
 }
 
 void
-ff_pixels_swap_endian(FFPixel *ps, unsigned int n)
+ff_swap_pixels_endian(FFPixel *ps, unsigned int n)
 {
 	int i;
 	for(i=0 ; i<n ; ++i)
-		ff_pixel_swap_endian(&ps[i]);
+		ff_swap_pixel_endian(&ps[i]);
 }
 
 int
