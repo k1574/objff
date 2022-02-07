@@ -1,4 +1,5 @@
 #include <ff/ff.h>
+#include <ff/ff_raw.h>
 #include <string.h>
 
 void
@@ -87,6 +88,58 @@ ff_colorname_to_pixel(FFPixel *px, char *s)
 	default:
 		return 1 ;
 	}
+
+	return 0 ;
+}
+
+int
+ff_read_header(int fd, u32 *w, u32 *h)
+{
+
+	int n;
+	char buf[sizeof(FFHeaderMagicValue)];
+
+	n = read(fd, buf, sizeof(FFHeaderMagicValue)-1) ;
+	if(n != sizeof(FFHeaderMagicValue))
+		return 1 ;
+
+	n = read(fd, w, sizeof(*w)) ;
+	if(n <= 0)
+		return 2 ;
+
+	n = read(fd, h, sizeof(*h)) ;
+	if(n <= 0)
+		return 3 ;
+		
+	if(ff_is_little_endian()){
+		ff_swap_endian(w, sizeof(*w));
+		ff_swap_endian(h, sizeof(*h));
+	}
+
+	return 0 ;
+}
+
+int
+ff_write_header(int fd, u32 w, u32 h)
+{
+	u32 wl, hl;
+
+	wl = w ;
+	hl = h ;
+	
+	if(ff_is_little_endian()){
+		ff_swap_endian(&wl, sizeof(wl));
+		ff_swap_endian(&hl, sizeof(hl));
+	}
+
+	write(fd, FFHeaderMagicValue, sizeof(FFHeaderMagicValue)-1);
+	int n = write(fd, &wl, sizeof(wl)) ;
+	if(n <= 0)
+		return 1 ;
+
+	n = write(fd, &hl, sizeof(hl)) ;
+	if(n <= 0)
+		return 2 ;
 
 	return 0 ;
 }

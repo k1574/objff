@@ -12,3 +12,6 @@ void ff_swap_pixels_endian(FFPixel *ps, unsigned int n);
 
 int ff_colorname_to_pixel(FFPixel *px, char *cn);
 
+int ff_read_header(int fd, u32 *w, u32 *h);
+int ff_write_header(int fd, u32 w, u32 h);
+
