@@ -1,6 +1,7 @@
 #include <ff/ff.h>
 #include <ff/ff_raw.h>
 #include <string.h>
+#include <unistd.h>
 
 void
 ff_swap_pixel_endian(FFPixel *p)
@@ -120,6 +121,19 @@ ff_read_header(int fd, u32 *w, u32 *h)
 }
 
 int
+ff_read_pixel(int fd, FFPixel *px)
+{
+	int n;
+	n = read(fd, px, sizeof(*px)) ;
+
+	if((n == sizeof(*px)) && ff_is_little_endian()){
+		ff_swap_pixel_endian(px);
+	}
+
+	return n ;
+}
+
+int
 ff_write_header(int fd, u32 w, u32 h)
 {
 	u32 wl, hl;
@@ -142,4 +156,21 @@ ff_write_header(int fd, u32 w, u32 h)
 		return 2 ;
 
 	return 0 ;
+}
+
+int
+ff_write_pixel(int fd, FFPixel *px)
+{
+	int n;
+	FFPixel bpx;
+	bpx.r = px->r ;
+	bpx.g = px->g ;
+	bpx.b = px->b ;
+	bpx.a = px->a ;
+	if(ff_is_little_endian()){
+		ff_swap_pixel_endian(&bpx);
+	}
+
+	n = write(fd, &bpx, sizeof(bpx));
+	return n ;
 }
