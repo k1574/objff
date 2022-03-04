@@ -226,3 +226,12 @@ ff_write_image(int fd, u32 w, u32 h, FFPixel *buf)
 
 	return 0 ;
 }
+
+void
+ff_copy_pixel(FFPixel *dst, FFPixel *src)
+{
+	dst->r = src->r ;
+	dst->g = src->g ;
+	dst->b = src->b ;
+	dst->a = src->a ;
+}

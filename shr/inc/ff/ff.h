@@ -7,6 +7,8 @@ typedef uint32_t u32;
 struct FFPixel { u16 r, g, b, a; } ;
 typedef struct FFPixel FFPixel;
 
+const u32 FFMaxValue = 1 << 31 ;
+
 int ff_is_little_endian(void);
 void ff_swap_endian(void *data, unsigned int size);
 void ff_swap_pixel_endian(FFPixel *p);
@@ -21,6 +23,8 @@ int ff_write_pixel(int fd, FFPixel *px);
 
 FFPixel *ff_read_image(int fd, u32 *w, u32 *h);
 int ff_write_image(int fd, u32 w, u32 h, FFPixel *buf);
+
+void ff_copy_pixel(FFPixel *dst, FFPixel *src);
 
 #endif
 
