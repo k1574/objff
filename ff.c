@@ -1,6 +1,7 @@
 #include <ff/ff.h>
 #include <ff/ff_raw.h>
 #include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 void
@@ -101,7 +102,7 @@ ff_read_header(int fd, u32 *w, u32 *h)
 	char buf[sizeof(FFHeaderMagicValue)];
 
 	n = read(fd, buf, sizeof(FFHeaderMagicValue)-1) ;
-	if(n != sizeof(FFHeaderMagicValue))
+	if(n != (sizeof(FFHeaderMagicValue) - 1))
 		return 1 ;
 
 	n = read(fd, w, sizeof(*w)) ;
@@ -173,4 +174,55 @@ ff_write_pixel(int fd, FFPixel *px)
 
 	n = write(fd, &bpx, sizeof(bpx));
 	return n ;
+}
+
+int
+ff_read_image_pixels(int fd, u32 w, u32 h, FFPixel *buf)
+{
+	int len, i;
+	if(fd < 0)
+		return -1 ;	
+
+	len = w * h ;
+	for(i=0 ; i<len ; ++i)
+		if(!ff_read_pixel(fd, buf+i))
+			return -1 ;
+
+	return 0 ;
+}
+
+FFPixel *
+ff_read_image(int fd, u32 *w, u32 *h)
+{
+	FFPixel *buf;
+	int len, i;
+	if(fd < 0)
+		return 0 ;
+
+	ff_read_header(fd, w, h);
+	len = *w * *h ;
+	buf = malloc(sizeof(*buf) * len ) ;
+
+	if(ff_read_image_pixels(fd, *w, *h, buf))
+		return 0 ;
+
+	return buf ;
+}
+
+int
+ff_write_image(int fd, u32 w, u32 h, FFPixel *buf)
+{
+	int len, i;
+	if(fd < 0)
+		return -1 ;
+
+	ff_write_header(fd, w, h);
+
+	len = w * h ;
+	for(i=0 ; i<len ; ++i){
+		if(!ff_write_pixel(fd, buf+i))
+			return -1 ;
+	}
+
+	return 0 ;
 }

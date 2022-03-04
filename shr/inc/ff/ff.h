@@ -19,5 +19,8 @@ int ff_read_pixel(int fd, FFPixel *px);
 int ff_write_header(int fd, u32 w, u32 h);
 int ff_write_pixel(int fd, FFPixel *px);
 
+FFPixel *ff_read_image(int fd, u32 *w, u32 *h);
+int ff_write_image(int fd, u32 w, u32 h, FFPixel *buf);
+
 #endif
 
