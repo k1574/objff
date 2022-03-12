@@ -1,5 +1,6 @@
 #ifndef __FF_H
 #define __FF_H
+
 #include <inttypes.h>
 
 typedef uint16_t u16;
@@ -7,7 +8,9 @@ typedef uint32_t u32;
 struct FFPixel { u16 r, g, b, a; } ;
 typedef struct FFPixel FFPixel;
 
-const u32 FFMaxValue = 1 << 31 ;
+enum{
+	FFMaxValue = 1 << 31,
+};
 
 int ff_is_little_endian(void);
 void ff_swap_endian(void *data, unsigned int size);
