@@ -103,15 +103,15 @@ ff_read_header(int fd, u32 *w, u32 *h)
 
 	n = read(fd, buf, sizeof(FFHeaderMagicValue)-1) ;
 	if(n != (sizeof(FFHeaderMagicValue) - 1))
-		return 1 ;
+		return FFReadErr ;
 
 	n = read(fd, w, sizeof(*w)) ;
 	if(n <= 0)
-		return 2 ;
+		return FFReadErr ;
 
 	n = read(fd, h, sizeof(*h)) ;
 	if(n <= 0)
-		return 3 ;
+		return FFReadErr ;
 		
 	if(ff_is_little_endian()){
 		ff_swap_endian(w, sizeof(*w));
@@ -207,6 +207,33 @@ ff_read_image(int fd, u32 *w, u32 *h)
 		return 0 ;
 
 	return buf ;
+}
+
+FFPixel *
+ff_read_n_pixels(int fd, FFPixel *buf, int n)
+{
+	FFError err;
+
+	while(n){
+		if(err = ff_read_pixel(fd, buf))
+			return 0 ;
+		++buf, --n;
+	}
+
+	return buf ;
+}
+
+FFError
+ff_skip_n_pixels(int fd, int n)
+{
+	FFError err;
+	FFPixel buf;
+
+	while(n)
+		if(err = ff_read_pixel(fd, &buf))
+			return err ;
+
+	return FFNoErr ;
 }
 
 int
